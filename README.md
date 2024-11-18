@@ -38,6 +38,7 @@ npm init -y
 npm install express, mysql2, bcryptjs, dotenv, jsonwebtoken, cors, nodemon
 
 
+
 Set Up the Database:
 Create a new MySQL database called loanwizard_db and create necessary tables on mysql workbench
 USER'S TABLE
@@ -48,6 +49,8 @@ CREATE TABLE users (
     password_hash VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+
 
 LOAN'S TABLE
 CREATE TABLE loans (
@@ -62,6 +65,8 @@ CREATE TABLE loans (
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
+
+
 REPAYMENT SCHEDULE TABLE
 CREATE TABLE repayment_schedules (
     schedule_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -72,6 +77,9 @@ CREATE TABLE repayment_schedules (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (loan_id) REFERENCES loans(loan_id) ON DELETE CASCADE
 );
+
+
+
 
 TRANSACTION HISTORY TABLE
 CREATE TABLE transaction_histories (
@@ -86,6 +94,8 @@ CREATE TABLE transaction_histories (
     FOREIGN KEY (loan_id) REFERENCES loans(loan_id) ON DELETE CASCADE
 );
 
+
+
 INTEREST RATE TABLE
 CREATE TABLE interest_rates (
     rate_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -95,6 +105,8 @@ CREATE TABLE interest_rates (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (loan_id) REFERENCES loans(loan_id) ON DELETE CASCADE
 );
+
+
 
 populate the table created with sample data:
 
