@@ -1,55 +1,27 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - The Loan Wizard</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div class="form-container">
-        <h2>Login</h2>
-        <form id="loginForm">
-            <label for="email">Email:</label>
-            <input type="email" id="email" required>
-
-            <label for="password">Password:</label>
-            <input type="password" id="password" required minlength="6">
-
-            <button type="submit">Login</button>
-            <p>Don’t have an account? <a href="register.html">Register</a></p>
-        </form>
-    </div>
-    <script src="main.js"></script>
-</body>
-</html> -->
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - The Loan Wizard</title>
+    <title>Dashboard - The Loan Wizard</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="form-container">
-        <h2>Login</h2>
-        
-        <!-- Message container for displaying feedback messages -->
-        <div id="loginMessage" class="message" style="display: none;"></div>
+    <header class="header">
+        <h1>Welcome to Your Dashboard</h1>
+        <p>Manage your magical loans here!</p>
+    </header>
 
-        <form id="loginForm">
-            <label for="email">Email:</label>
-            <input type="email" id="email" required>
+    <section id="loan-info" class="content"></section>
 
-            <label for="password">Password:</label>
-            <input type="password" id="password" required minlength="6">
+    <footer>
+        <button id="logoutButton">Logout</button>
+    </footer>
 
-            <button type="submit">Login</button>
-            <p>Don’t have an account? <a href="register.html">Register</a></p>
-        </form>
-    </div>
+    <!-- Message Section -->
+    <div id="logoutMessage" class="message"></div>
+
     <script src="main.js"></script>
 </body>
 </html>
