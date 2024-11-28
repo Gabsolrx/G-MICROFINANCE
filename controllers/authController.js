@@ -14,7 +14,7 @@ exports.register = async (req, res) => {
     try {
         // Check if the email already exists
         console.log('Checking if email exists in the database...');
-        const [results] = await db.query('SELECT email FROM Users WHERE email = ?', [email]);
+        const [results] = await db.query('SELECT email FROM users WHERE email = ?', [email]);
 
         if (results.length > 0) {
             // Email already exists
@@ -29,7 +29,7 @@ exports.register = async (req, res) => {
         // Insert the new user
         console.log('Inserting new user...');
         const [insertResult] = await db.query(
-            'INSERT INTO Users (name, email, password_hash) VALUES (?, ?, ?)',
+            'INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)',
             [name, email, hashedPassword]
         );
 
@@ -50,7 +50,7 @@ exports.login = async (req, res) => {
         console.log('Attempting to login with email:', email);
 
         // Find the user by email
-        const [results] = await db.query('SELECT * FROM Users WHERE email = ?', [email]);
+        const [results] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
 
         if (results.length === 0 || !bcrypt.compareSync(password, results[0].password_hash)) {
             // Email not found or password incorrect

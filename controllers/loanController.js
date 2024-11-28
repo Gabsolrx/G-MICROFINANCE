@@ -1,63 +1,66 @@
 
+const db = require('../config/db'); // Import the database connection
 
-// Function to get user loans with all related details
-exports.getUserLoans = async (req, res) => {
-    const userId = req.user.user_id;
+const INTEREST_RATE = 0.02; // Fixed interest rate (2%)
 
-    const query = `
-    SELECT 
-        l.loan_id,
-        l.amount AS loan_amount,
-        l.loan_date,
-        ir.interest_rate,
-        rs.schedule_id,
-        rs.repayment_date,
-        rs.amount_due,
-        th.transaction_id,
-        th.transaction_date,
-        th.amount AS transaction_amount,
-        th.description AS transaction_description
-    FROM loans l
-    LEFT JOIN interest_rates ir ON l.loan_id = ir.loan_id
-    LEFT JOIN repayment_schedules rs ON l.loan_id = rs.loan_id
-    LEFT JOIN transaction_histories th ON l.loan_id = th.loan_id
-    WHERE l.user_id = ?
-    ORDER BY l.loan_id, rs.repayment_date, th.transaction_date;
-    `;
+// Controller to apply for a loan
+exports.applyLoan = async (req, res) => {
+  const { userId, loanAmount, loanTermMonths, repaymentSchedule } = req.body;
 
-    console.log(`Fetching loans and related data for user with ID: ${userId}`);
+  if (!userId || !loanAmount || !loanTermMonths || !repaymentSchedule) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
 
-    try {
-        // Execute the query
-        const [results] = await db.query(query, [userId]);
+  // Calculate total repayment amount
+  const totalRepayment = loanAmount + loanAmount * INTEREST_RATE * (loanTermMonths / 12);
 
-        // Check if results are empty
-        if (results.length === 0) {
-            console.log(`No loans found for user with ID: ${userId}`);
-            return res.status(404).json({ message: 'No loans found for this user.' });
-        }
+  const query = `
+    INSERT INTO loans 
+    (user_id, loan_amount, loan_term_months, repayment_schedule, 
+     loan_status, loan_start_date, loan_due_date, total_repayment_amount, 
+     balance_due, created_at, updated_at)
+    VALUES (?, ?, ?, ?, 'pending', CURDATE(), DATE_ADD(CURDATE(), INTERVAL ? MONTH), ?, ?, NOW(), NOW());
+  `;
 
-        // Return the fetched loans and related data
-        console.log(`Found ${results.length} loan(s) and related data for user with ID: ${userId}`);
-        res.status(200).json(results);
-    } catch (err) {
-        // Enhanced error handling and debugging
-        console.error(`Error fetching loans for user with ID: ${userId}`, err);
-
-        // Return an error response with the error message
-        res.status(500).json({ error: 'An error occurred while fetching loans.', details: err.message });
+  db.query(
+    query,
+    [userId, loanAmount, loanTermMonths, repaymentSchedule, loanTermMonths, totalRepayment, totalRepayment],
+    (err, result) => {
+      if (err) {
+        console.error("Error applying for loan:", err);
+        return res.status(500).json({ error: "Database error" });
+      }
+      res.status(201).json({ message: "Loan applied successfully", loanId: result.insertId });
     }
+  );
 };
 
+// Controller to fetch loan details for a user
+exports.getLoanDetails = async (req, res) => {
+  const userId = req.params.userId;
 
+  const query = "SELECT * FROM loans WHERE user_id = ?";
+  db.query(query, [userId], (err, results) => {
+    if (err) {
+      console.error("Error fetching loans:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+    res.status(200).json(results.map(calculateLoanDetails));
+  });
+};
 
+// Function to calculate total repayment and balance due
+function calculateLoanDetails(loan) {
+  const totalRepayment =
+    loan.loan_amount + loan.loan_amount * INTEREST_RATE * (loan.loan_term_months / 12);
+  const balanceDue = totalRepayment - (loan.amount_paid || 0); // Handle case where `amount_paid` is null
 
-
-
-
-
-
-
+  return {
+    ...loan,
+    total_repayment_amount: totalRepayment.toFixed(2),
+    balance_due: balanceDue.toFixed(2),
+  };
+}
 
 
 
