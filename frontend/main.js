@@ -70,55 +70,77 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Loan Application Form Submission
-    document.getElementById("loanForm")?.addEventListener("submit", async (event) => {
-        event.preventDefault();
+    const token = localStorage.getItem('token');
+    if (token) {
+        const userId = getUserIdFromToken(token); // Extract user_id from token
+        if (userId) {
+            fetchLoanDetails(userId); // Fetch loan details for the logged-in user
+        }
+    } else {
+        console.log("User not logged in. Skipping loan details fetch.");
+    }
 
-        const userId = document.getElementById("userId").value;
-        const loanAmount = document.getElementById("loanAmount").value;
-        const loanTermMonths = document.getElementById("loanTermMonths").value;
-        const repaymentSchedule = document.getElementById("repaymentSchedule").value;
-
+    // Fetch Loan Details and Populate Table
+    async function fetchLoanDetails(userId) {
+        const token = localStorage.getItem('token');
         try {
-            const response = await fetch(`${API_URL}/apply`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ userId, loanAmount, loanTermMonths, repaymentSchedule }),
+            const response = await fetch(`${API_URL}/loans/${userId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
             });
 
-            const result = await response.json();
-            if (response.ok) {
-                alert(`Loan applied successfully. Loan ID: ${result.loanId}`);
-                fetchLoanDetails(userId);
-            } else {
-                alert(result.error);
-            }
-        } catch (error) {
-            console.error("Error applying for loan:", error);
-            alert("Error applying for loan. Please try again later.");
-        }
-    });
-
-    // Fetch Loan Details
-    async function fetchLoanDetails(userId) {
-        try {
-            const response = await fetch(`${API_URL}/loans/${userId}`);
             const loans = await response.json();
+            if (response.ok) {
+                const container = document.getElementById("loanDetailsContainer");
 
-            const container = document.getElementById("loanDetailsContainer");
-            if (container) {
-                container.innerHTML = loans.map((loan) => `
-                    <div class="loan-card">
-                        <p><strong>Loan ID:</strong> ${loan.loan_id}</p>
-                        <p><strong>Loan Amount:</strong> $${loan.loan_amount}</p>
-                        <p><strong>Total Repayment:</strong> $${loan.total_repayment_amount}</p>
-                        <p><strong>Balance Due:</strong> $${loan.balance_due}</p>
-                        <p><strong>Status:</strong> ${loan.status}</p>
-                    </div>
-                `).join('');
+                if (container) {
+                    if (loans.length > 0) {
+                        container.innerHTML = `
+                            <div class="loan-table-container">
+                                <table class="loan-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Loan ID</th>
+                                            <th>Amount</th>
+                                            <th>Term (Months)</th>
+                                            <th>Repayment Schedule</th>
+                                            <th>Status</th>
+                                            <th>Start Date</th>
+                                            <th>Due Date</th>
+                                            <th>Total Repayment</th>
+                                            <th>Balance Due</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${loans.map(loan => `
+                                            <tr>
+                                                <td>${loan.loan_id}</td>
+                                                <td>$${loan.loan_amount}</td>
+                                                <td>${loan.loan_term_months}</td>
+                                                <td>${loan.repayment_schedule}</td>
+                                                <td>${loan.loan_status}</td>
+                                                <td>${loan.loan_start_date}</td>
+                                                <td>${loan.loan_due_date}</td>
+                                                <td>$${loan.total_repayment_amount}</td>
+                                                <td>$${loan.balance_due}</td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        `;
+                    } else {
+                        container.innerHTML = `<p>No loans found for this user.</p>`;
+                    }
+                }
+            } else {
+                displayMessage('loanDetailsMessage', "Failed to fetch loan details. Please try again later.", "error");
             }
         } catch (error) {
             console.error("Error fetching loan details:", error);
+            displayMessage('loanDetailsMessage', "Unable to fetch loan details. Please try again later.", "error");
         }
     }
 
@@ -135,19 +157,17 @@ document.addEventListener("DOMContentLoaded", () => {
             try {
                 const response = await fetch(`${API_URL}/auth/logout`, {
                     method: 'GET',
-                    headers: { 
-                        'Authorization': `Bearer ${token}` 
+                    headers: {
+                        'Authorization': `Bearer ${token}`
                     }
                 });
 
                 if (response.ok) {
-                    const result = await response.json();
-                    displayMessage('logoutMessage', result.message, "success");
                     localStorage.removeItem('token');
-                    setTimeout(() => window.location.href = 'homepage.html', 1000);
+                    displayMessage('logoutMessage', "Logout successful! Redirecting to login page.", "success");
+                    setTimeout(() => window.location.href = 'login.html', 1000);
                 } else {
-                    const error = await response.json();
-                    displayMessage('logoutMessage', `Logout failed: ${error.message}`, "error");
+                    displayMessage('logoutMessage', "Logout failed. Please try again later.", "error");
                 }
             } catch (error) {
                 console.error("Error during logout:", error);
@@ -155,7 +175,19 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
+    // Helper function to decode JWT and extract user_id
+    function getUserIdFromToken(token) {
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            return payload.user_id || null; // Return the user_id from the payload
+        } catch (error) {
+            console.error("Error decoding token:", error);
+            return null; // Return null if token is invalid or decoding fails
+        }
+    }
 });
+
 
 
 

@@ -10,7 +10,7 @@ const { authenticateToken } = require('../middleware'); // Ensure middleware is 
 router.post('/apply', authenticateToken, loanController.applyLoan); // Added authentication to secure route
 
 // Route to fetch loan details for a specific user by ID
-router.get('/loans/:userId', authenticateToken, loanController.getLoanDetails); // Added authentication to secure route
+router.get('/:userId', authenticateToken, loanController.getLoanDetails); // Added authentication to secure route
 
 module.exports = router;
 

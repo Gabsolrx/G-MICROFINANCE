@@ -16,7 +16,7 @@ app.use(express.json());
 // Serve static files from the frontend directory
 app.use(express.static(path.join(__dirname, 'frontend')));
 
-app.use('/api/loans', loanRoutes)
+
 app.use('/api/auth', authRoutes);
 app.use('/api/loans', loanRoutes);
 app.use('/api/protected-route', authenticateToken, (req, res) => {
