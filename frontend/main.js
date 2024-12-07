@@ -4,11 +4,15 @@ document.addEventListener("DOMContentLoaded", () => {
     // Helper function to display messages
     const displayMessage = (elementId, message, type = "info") => {
         const messageDiv = document.getElementById(elementId);
-        if (messageDiv) {
-            messageDiv.textContent = message;
-            messageDiv.className = `message ${type}`;
-            messageDiv.style.display = "block";
-        }
+        messageDiv.textContent = ''
+        messageDiv.textContent = message
+        messageDiv.className = `message ${type}`;
+        messageDiv.style.display = "block";
+        setTimeout(() => {
+            messageDiv.textContent = ''
+            messageDiv.style.display = "none";
+ 
+        }, 5000)
     };
 
     // Registration Form Submission
@@ -79,6 +83,45 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
         console.log("User not logged in. Skipping loan details fetch.");
     }
+
+  // Loan Application Form Submission
+  document.getElementById('loanForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const userId = document.getElementById('userId').value.trim();
+    const loanAmount = parseFloat(document.getElementById('loanAmount').value);
+    const loanTermMonths = parseInt(document.getElementById('loanTermMonths').value);
+    const repaymentSchedule = document.getElementById('repaymentSchedule').value;
+
+    if (!userId || isNaN(loanAmount) || isNaN(loanTermMonths) || !repaymentSchedule) {
+        displayMessage('loanMessage', "Please fill out all loan fields correctly.", "error");
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/loans/apply`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ userId, loanAmount, loanTermMonths, repaymentSchedule })
+        });
+        
+        const result = await response.json()
+        
+        if (result.success) {
+            
+            displayMessage('loanMessage', "Loan application submitted successfully!", "success");
+            fetchLoanDetails(userId); // Refresh loan details
+        } else {
+            const error = await response.json();
+            displayMessage('loanMessage', `Loan application failed: ${error.message}`, "error");
+        }
+    } catch (error) {
+        console.error("Error applying for loan:", error);
+        displayMessage('loanMessage', "Loan application failed. Please try again later.", "error");
+    }
+});
 
     // Fetch Loan Details and Populate Table
     async function fetchLoanDetails(userId) {

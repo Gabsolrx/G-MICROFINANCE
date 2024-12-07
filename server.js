@@ -23,6 +23,11 @@ app.use('/api/protected-route', authenticateToken, (req, res) => {
     res.json({ message: "You accessed a protected route!" });
 });
 
+// This serves `homepage.html` for the register route
+app.get('/homepage', (req, res) => {
+    res.sendFile(path.join(__dirname, 'frontend', 'homepage.html')); 
+});
+
 
 // This serves `register.html` for the register route
 app.get('/register', (req, res) => {

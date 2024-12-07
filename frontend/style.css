@@ -129,6 +129,55 @@ input::placeholder {
     opacity: 0.8;
 }
 
+/* General Styling for Messages */
+.message {
+    display: none;
+    margin: 20px auto;
+    padding: 15px;
+    border-radius: 5px;
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+}
+
+/* Success Message Styling */
+.message.success {
+    background-color: #e0f7e9;
+    border: 1px solid #28a745;
+    color: #155724;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Error Message Styling */
+.message.error {
+    background-color: #f8d7da;
+    border: 1px solid #dc3545;
+    color: #721c24;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Info Message Styling */
+.message.info {
+    background-color: #d1ecf1;
+    border: 1px solid #17a2b8;
+    color: #0c5460;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Add transitions for smoother display */
+.message {
+    transition: all 0.3s ease;
+}
+
+/* Center the message box */
+.message {
+    position: relative;
+    margin: 10px auto;
+}
+
+
 /* Loan Table Section */
 .loan-table-container {
     background: rgba(255, 255, 255, 0.1);
