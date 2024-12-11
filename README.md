@@ -108,41 +108,6 @@ CREATE TABLE interest_rates (
 
 
 
-populate the table created with sample data:
-
- sample data into 'users'
-INSERT INTO users (username, email, password_hash) 
-VALUES 
-('hero_borrower', 'hero@example.com', '$2a$10$exampleHash1'), -- Replace with a real bcrypt hash
-('magic_user', 'magic@example.com', '$2a$10$exampleHash2'); -- Replace with a real bcrypt hash
-
- sample data into 'loans'
-INSERT INTO loans (user_id, loan_amount, interest_rate, start_date, end_date, status) 
-VALUES 
-(1, 500.00, 5.00, '2024-01-01', '2024-06-01', 'active'),
-(2, 1000.00, 4.50, '2024-02-15', '2024-08-15', 'active');
-
- sample data into 'repayment_schedules'
-INSERT INTO repayment_schedules (loan_id, repayment_date, repayment_amount, status) 
-VALUES 
-(1, '2024-02-01', 100.00, 'completed'),
-(1, '2024-03-01', 100.00, 'pending'),
-(2, '2024-03-15', 200.00, 'pending'),
-(2, '2024-04-15', 200.00, 'pending');
-
- sample data into 'transaction_histories'
-INSERT INTO transaction_histories (user_id, loan_id, transaction_date, transaction_type, amount, description) 
-VALUES 
-(1, 1, '2024-01-01 10:00:00', 'loan', 500.00, 'Initial loan disbursement'),
-(1, 1, '2024-02-01 12:00:00', 'repayment', 100.00, 'First repayment made'),
-(2, 2, '2024-02-15 09:30:00', 'loan', 1000.00, 'Initial loan disbursement'),
-(2, 2, '2024-03-15 11:00:00', 'repayment', 200.00, 'Partial repayment made');
-
- sample data into 'interest_rates'
-INSERT INTO interest_rates (loan_id, rate, effective_date) 
-VALUES 
-(1, 5.00, '2024-01-01'),
-(2, 4.50, '2024-02-15');
 
 THE PROJECT WAS STRUCTURED AS SEEN BELOW:
 Project Structure 📁
