@@ -57,7 +57,6 @@ CREATE TABLE users (
 
 
 
-
 CREATE TABLE loans (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -69,11 +68,11 @@ CREATE TABLE loans (
     loan_due_date DATE NOT NULL,
     total_repayment_amount DECIMAL(10, 2) NOT NULL,
     balance_due DECIMAL(10, 2) NOT NULL,
+    amount_paid DECIMAL(10, 2) DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
-
 
 
 
