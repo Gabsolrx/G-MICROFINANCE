@@ -40,7 +40,12 @@ npm install express, mysql2, bcryptjs, dotenv, jsonwebtoken, cors, nodemon
 
 
 Set Up the Database:
-Create a new MySQL database called loanwizard_db and create necessary tables on mysql workbench
+Create a new MySQL database called loanwizard 
+
+
+
+
+CREATE NECESSARY TABLES ON MYSQL WORKBENCH
 USER'S TABLE
 CREATE TABLE users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -52,58 +57,21 @@ CREATE TABLE users (
 
 
 
-LOAN'S TABLE
+
 CREATE TABLE loans (
-    loan_id INT AUTO_INCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     loan_amount DECIMAL(10, 2) NOT NULL,
-    interest_rate DECIMAL(5, 2) NOT NULL, 
-    start_date DATE NOT NULL,
-    end_date DATE NOT NULL,
-    status ENUM('active', 'paid', 'defaulted') DEFAULT 'active',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-);
-
-
-
-REPAYMENT SCHEDULE TABLE
-CREATE TABLE repayment_schedules (
-    schedule_id INT AUTO_INCREMENT PRIMARY KEY,
-    loan_id INT NOT NULL,
-    repayment_date DATE NOT NULL,
-    repayment_amount DECIMAL(10, 2) NOT NULL,
-    status ENUM('pending', 'completed', 'missed') DEFAULT 'pending',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (loan_id) REFERENCES loans(loan_id) ON DELETE CASCADE
-);
-
-
-
-
-TRANSACTION HISTORY TABLE
-CREATE TABLE transaction_histories (
-    transaction_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    loan_id INT NOT NULL,
-    transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    transaction_type ENUM('loan', 'repayment') NOT NULL,
-    amount DECIMAL(10, 2) NOT NULL,
-    description TEXT,
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (loan_id) REFERENCES loans(loan_id) ON DELETE CASCADE
-);
-
-
-
-INTEREST RATE TABLE
-CREATE TABLE interest_rates (
-    rate_id INT AUTO_INCREMENT PRIMARY KEY,
-    loan_id INT NOT NULL,
-    rate DECIMAL(5, 2) NOT NULL, -- Percentage value (e.g., 5.00 for 5%)
-    effective_date DATE NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (loan_id) REFERENCES loans(loan_id) ON DELETE CASCADE
+    loan_term_months INT NOT NULL,
+    repayment_schedule VARCHAR(255) NOT NULL,
+    loan_status ENUM('pending', 'approved', 'rejected', 'completed') DEFAULT 'pending',
+    loan_start_date DATE NOT NULL,
+    loan_due_date DATE NOT NULL,
+    total_repayment_amount DECIMAL(10, 2) NOT NULL,
+    balance_due DECIMAL(10, 2) NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 
